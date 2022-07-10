@@ -22,6 +22,7 @@ public class Affairs {
     private String name;
     private String createTime;
     private String updateTime;
+    private String done;
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)

@@ -301,6 +301,15 @@
             background-color: rgba(180, 20, 14, 0.8);
         }
 
+        #overlay1 .popup p.zag {
+            margin: 20px 0 10px;
+            padding: 0 0 6px;
+            color: #e6b333;
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 1px solid #e6b333;
+        }
+
         #overlay2 .popup p.zag {
             margin: 20px 0 10px;
             padding: 0 0 6px;
@@ -473,20 +482,19 @@
     </div>
 </scan>
 
-<scan th:if="${toDoListView.name != null}">
-    <scan th:each="affair: ${toDoListView.affairses}">
-        <div id ="overlay2">
-            <div class="popup">
-                <button class="close" title="Закрыть окно" onclick="swa6()"></button>
-                <p class="zag">Изменить</p>
-                <form th:action="@{/tolistAffairs/redirect/{id}(id = ${affair.id})}" method="post">
-                    <input name="affair" th:value="${affair.name}">
-                    <button type="submit" style="font-size : 15px;">Изменить</button>
-                </form>
-            </div>
-        </div>
-    </scan>
-</scan>
+
+<div id="overlay2">
+    <div class="popup">
+        <button class="close" title="Закрыть окно" onclick="swa6()"></button>
+        <p class="zag">Изменить</p>
+        <form th:action="@{/tolistAffairs/redirect}" method="post">
+            <input type="hidden" name="affairId" id="Iid">
+            <!--                    <input  name="affairid" id="Iid" >-->
+            <input name="affairName" id="Naame">
+            <button type="submit" style="font-size : 15px;">Изменить</button>
+        </form>
+    </div>
+</div>
 
 
 <div class="ui icon input" style="margin-top:13%; margin-right:15px;">
@@ -516,7 +524,7 @@
 
         <div class="ui two column very relaxed grid" th:each="affair: ${toDoListView.affairses}">
             <div class="column">
-                <div class="ui relaxed divided list" >
+                <div class="ui relaxed divided list">
                     <div class="item">
                         <div class="content">
                             <a class="header" th:text="${affair.name}"></a>
@@ -525,19 +533,36 @@
                     </div>
                 </div>
 
-<!--                <p th:text="${affair.name}"></p>-->
+
             </div>
             <div class="column">
                 <table>
                     <td>
-                        <div  class="ui toggle checkbox">
-                            <input name="public" type="checkbox" checked>
-                            <label>Выполнено</label>
-                        </div>
+                        <scan th:if="${affair.done == 'false'}">
+                            <form action="/affair/checkboxFalse" method="post" if="checkBox">
+                                <div class="ui toggle checkbox">
+                                    <input type="hidden" name="affairId" th:value="${affair.id}">
+                                    <input type="checkbox" name="checkbox" value="true" onclick="this.form.submit()">
+                                    <label>Выполнено</label>
+                                </div>
+                            </form>
+                        </scan>
+                        <scan th:if="${affair.done == 'true'}">
+                            <form action="/affair/checkboxTrue" method="post">
+                                <div class="ui toggle checkbox">
+                                    <input type="hidden" name="affairId" th:value="${affair.id}">
+                                    <input type="checkbox" name="checkbox" checked onclick="this.form.submit()">
+                                    <label>Выполнено</label>
+                                </div>
+                            </form>
+                        </scan>
                     </td>
                     <td>
+
+
                         <a>
-                            <i class="pencil alternate icon" style="margin-left:90px;" onclick="swa5()"></i>
+                            <i class="pencil alternate icon" style="margin-left:90px;"
+                               th:attr="onclick=|swa5('${affair.name}', '${affair.id}')|"></i>
                         </a>
                     <td>
                         <a href="/affairs/delete" th:href="@{/affairs/delete(affairId=${affair.getId()})}">
@@ -582,6 +607,8 @@
     c = document.getElementById('overlay1');
     e = document.getElementById('overlay2');
 
+    document.getElementById('checkBox').onsubmit;
+
     function swa() {
         b.style.visibility = 'visible';
         b.style.opacity = '1';
@@ -604,10 +631,12 @@
         c.style.opacity = '0';
     }
 
-    function swa5() {
+    function swa5(name, id) {
         e.style.visibility = 'visible';
         e.style.opacity = '1';
         e.style.transition = 'all 0.7s ease-out 0s';
+        document.getElementById("Iid").value = id;
+        document.getElementById("Naame").value = name;
     }
 
     function swa6() {

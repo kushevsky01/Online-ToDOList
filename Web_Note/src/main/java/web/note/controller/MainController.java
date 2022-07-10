@@ -94,6 +94,7 @@ public class MainController {
         Affairs affairs = new Affairs();
         affairs.setName(affair);
         affairs.setUpdateTime(new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()));
+        affairs.setDone("false");
         affairs.setToDoList(toDoListRepository.findByIdAndNameAndUser(toDoListId,toDoListName, user));
         affairsRepository.saveAndFlush(affairs);
         ToDoList toDoList = toDoListRepository.findByIdAndNameAndUser(toDoListId,toDoListName, user);
@@ -102,16 +103,41 @@ public class MainController {
     }
 
 
-    @PostMapping("/tolistAffairs/redirect/{id}")
-    public String redirectAffair(@PathVariable("id") Long id,
-                                 @RequestParam String affair){
+    @PostMapping("/tolistAffairs/redirect")
+    public String redirectAffair(@RequestParam Long affairId,
+                                 @RequestParam String affairName){
 
-        Affairs affairs = affairsRepository.findById(id).get();
-        affairs.setName(affair);
+        Affairs affairs = affairsRepository.findById(affairId).get();
+        affairs.setName(affairName);
         affairs.setUpdateTime(new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()));
         affairsRepository.saveAndFlush(affairs);
         return "redirect:/main";
     }
 
+    @PostMapping("/affair/checkboxFalse")
+    public String getCheckBox(@RequestParam Long affairId, @RequestParam String checkbox){
+
+        Affairs affairs = affairsRepository.findById(affairId).get();
+
+        if (checkbox.equals("true")){
+            affairs.setDone("true");
+        }
+
+        affairsRepository.saveAndFlush(affairs);
+        System.out.println(affairId);
+        System.out.println(checkbox);
+
+        return "redirect:/main";
+    }
+
+    @PostMapping("/affair/checkboxTrue")
+    public String getCheckBox(@RequestParam Long affairId){
+        Affairs affairs = affairsRepository.findById(affairId).get();
+        affairs.setDone("false");
+        affairsRepository.saveAndFlush(affairs);
+        System.out.println(affairId);
+
+        return "redirect:/main";
+    }
 
 }
